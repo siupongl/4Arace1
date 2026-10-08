@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>第二屆4A心算王大賽 乘法篇</title>
+    <!-- Tailwind CSS for modern responsive layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* iPad touch optimization & disallow visual text selection */
+        body {
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            touch-action: manipulation;
+        }
+        
+        /* Custom button tap effect */
+        .option-btn {
+            transition: transform 0.08s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .option-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* Smooth progress bar transitions */
+        .progress-bar-inner {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col justify-between items-center p-4 sm:p-6 text-slate-800">
+
+    <header class="w-full max-w-3xl text-center my-2">
+        <div class="inline-block bg-amber-400 text-amber-950 font-black px-4 py-1 rounded-full text-sm sm:text-base mb-2 shadow-sm uppercase tracking-wider">
+            四年級班際賽事
+        </div>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-indigo-900 tracking-tight">
+            第二屆4A心算王大賽
+        </h1>
+        <h2 class="text-xl sm:text-2xl font-bold text-indigo-600 mt-1">
+            乘法篇（個位數 × 個位數）
+        </h2>
+    </header>
+
+    <main class="w-full max-w-3xl flex-1 flex flex-col justify-center items-center my-2">
+
+        <!-- ==================== 1. START SCREEN ==================== -->
+        <div id="start-screen" class="w-full bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200/80 text-center flex flex-col items-center">
+            <div class="w-24 h-24 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-6 text-5xl shadow-inner">
+                🏆
+            </div>
+            <h3 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-4">比賽準備說明</h3>
+            
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-8 text-left w-full max-w-lg space-y-3 text-slate-700 text-lg">
+                <div class="flex items-start">
+                    <span class="bg-indigo-500 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-sm mr-3 shrink-0 mt-0.5">1</span>
+                    <span>總共有 <strong class="text-indigo-600">100 題</strong> 個位數乘法選擇題。</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="bg-indigo-500 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-sm mr-3 shrink-0 mt-0.5">2</span>
+                    <span>比賽限時 <strong class="text-rose-600">5 分鐘 (300 秒)</strong>。</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="bg-indigo-500 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-sm mr-3 shrink-0 mt-0.5">3</span>
+                    <span>每題答對得 1 分，答錯不扣分。</span>
+                </div>
+                <div class="flex items-start">
+                    <span class="bg-indigo-500 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-sm mr-3 shrink-0 mt-0.5">4</span>
+                    <span>全體同學題目順序相同，請盡力加快速度！</span>
+                </div>
+            </div>
+
+            <button id="start-btn" onclick="startGame()" class="w-full max-w-md bg-indigo-600 hover:bg-indigo-700 text-white text-2xl font-bold py-5 px-8 rounded-2xl shadow-lg hover:shadow-indigo-200 active:scale-95 transition-all cursor-pointer">
+                🚀 開始比賽
+            </button>
+        </div>
+
+
+        <!-- ==================== 2. QUIZ SCREEN ==================== -->
+        <div id="quiz-screen" class="w-full bg-white rounded-3xl p-5 sm:p-8 shadow-xl border border-slate-200/80 hidden flex-col">
+            
+            <!-- Top Dashboard: Timer & Progress -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-slate-500 font-semibold text-lg">進度：</span>
+                        <span id="question-number" class="text-2xl font-black text-indigo-600">1</span>
+                        <span class="text-slate-400 font-bold text-xl">/ 100</span>
+                    </div>
+
+                    <!-- Timer Pill -->
+                    <div id="timer-box" class="flex items-center bg-amber-100 text-amber-900 border-2 border-amber-300 font-mono font-black text-2xl sm:text-3xl px-5 py-2 rounded-2xl shadow-sm">
+                        ⏱️ <span id="time-display" class="ml-2">05:00</span>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-200 h-4 rounded-full overflow-hidden p-0.5">
+                    <div id="progress-bar" class="progress-bar-inner bg-indigo-600 h-full rounded-full w-0"></div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="bg-indigo-50/70 border-2 border-indigo-100 rounded-3xl p-8 sm:p-12 mb-6 text-center shadow-inner flex flex-col justify-center items-center min-h-[180px]">
+                <div class="text-slate-500 text-sm sm:text-base font-bold uppercase tracking-wider mb-2">請計算出正確答案</div>
+                <div id="math-expression" class="text-6xl sm:text-7xl md:text-8xl font-black text-indigo-950 tracking-wide font-mono">
+                    7 × 8 = ?
+                </div>
+            </div>
+
+            <!-- Answer Options (2x2 Grid optimized for iPad touch) -->
+            <div class="grid grid-cols-2 gap-4 sm:gap-6">
+                <button onclick="selectOption(0)" id="opt-0" class="option-btn bg-slate-50 hover:bg-indigo-50 border-3 border-slate-300 hover:border-indigo-400 text-slate-800 text-3xl sm:text-5xl font-black py-6 sm:py-8 rounded-2xl shadow-md flex items-center justify-center">
+                    --
+                </button>
+                <button onclick="selectOption(1)" id="opt-1" class="option-btn bg-slate-50 hover:bg-indigo-50 border-3 border-slate-300 hover:border-indigo-400 text-slate-800 text-3xl sm:text-5xl font-black py-6 sm:py-8 rounded-2xl shadow-md flex items-center justify-center">
+                    --
+                </button>
+                <button onclick="selectOption(2)" id="opt-2" class="option-btn bg-slate-50 hover:bg-indigo-50 border-3 border-slate-300 hover:border-indigo-400 text-slate-800 text-3xl sm:text-5xl font-black py-6 sm:py-8 rounded-2xl shadow-md flex items-center justify-center">
+                    --
+                </button>
+                <button onclick="selectOption(3)" id="opt-3" class="option-btn bg-slate-50 hover:bg-indigo-50 border-3 border-slate-300 hover:border-indigo-400 text-slate-800 text-3xl sm:text-5xl font-black py-6 sm:py-8 rounded-2xl shadow-md flex items-center justify-center">
+                    --
+                </button>
+            </div>
+        </div>
+
+
+        <!-- ==================== 3. RESULT SCREEN ==================== -->
+        <div id="result-screen" class="w-full bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200/80 hidden flex-col items-center text-center">
+            
+            <div id="badge-icon" class="text-6xl mb-2">🎉</div>
+            <h3 class="text-3xl font-extrabold text-slate-800 mb-1">比賽結束！</h3>
+            <p id="result-subtitle" class="text-slate-500 font-medium mb-6">太棒了！這是你的心算成績單</p>
+
+            <!-- Score Banner -->
+            <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-3xl p-6 mb-8 w-full max-w-md shadow-lg">
+                <div class="text-indigo-100 font-bold uppercase tracking-wider text-sm mb-1">最終總得分</div>
+                <div class="text-6xl sm:text-7xl font-black tracking-tight mb-1">
+                    <span id="final-score">0</span> <span class="text-2xl font-normal text-indigo-200">/ 100 分</span>
+                </div>
+                <div id="performance-tag" class="inline-block bg-white/20 backdrop-blur-md text-white font-bold px-4 py-1 rounded-full text-base mt-2">
+                    心算小達人
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-3 gap-3 sm:gap-4 w-full max-w-md mb-8">
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center">
+                    <div class="text-slate-400 text-xs sm:text-sm font-bold mb-1">完成題數</div>
+                    <div id="completed-count" class="text-xl sm:text-2xl font-black text-slate-800">0/100</div>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center">
+                    <div class="text-slate-400 text-xs sm:text-sm font-bold mb-1">正確率</div>
+                    <div id="accuracy-rate" class="text-xl sm:text-2xl font-black text-emerald-600">0%</div>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center">
+                    <div class="text-slate-400 text-xs sm:text-sm font-bold mb-1">總耗時</div>
+                    <div id="time-spent" class="text-xl sm:text-2xl font-black text-amber-600">0秒</div>
+                </div>
+            </div>
+
+            <!-- Retry Button -->
+            <button onclick="resetGame()" class="w-full max-w-md bg-slate-800 hover:bg-slate-900 text-white text-xl font-bold py-4 px-8 rounded-2xl shadow-md active:scale-95 transition-all cursor-pointer">
+                🔄 重新挑戰
+            </button>
+        </div>
+
+    </main>
+
+    <footer class="text-slate-400 text-xs sm:text-sm text-center py-2">
+        第二屆4A心算王大賽 · iPad 專用競賽系統
+    </footer>
+
+    <!-- ==================== JAVASCRIPT LOGIC ==================== -->
+    <script>
+        const TOTAL_QUESTIONS = 100;
+        const TOTAL_TIME_SECONDS = 300; // 5 minutes = 300 seconds
+        const SEED = 20260401; // Fixed seed ensuring exact same order across all devices
+
+        let questions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let timeRemaining = TOTAL_TIME_SECONDS;
+        let timerInterval = null;
+        let startTime = 0;
+        let endTime = 0;
+
+        // Mulberry32 seeded random number generator
+        function mulberry32(a) {
+            return function() {
+                let t = a += 0x6D2B79F5;
+                t = Math.imul(t ^ (t >>> 15), t | 1);
+                t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+                return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+            }
+        }
+
+        function generateQuestions() {
+            const random = mulberry32(SEED);
+            const generatedList = [];
+
+            for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+                // Generate two single-digit factors (1 to 9)
+                const num1 = Math.floor(random() * 9) + 1;
+                const num2 = Math.floor(random() * 9) + 1;
+                const correctAnswer = num1 * num2;
+
+                // Generate 3 plausible distractors
+                const optionsSet = new Set();
+                optionsSet.add(correctAnswer);
+
+                while (optionsSet.size < 4) {
+                    let offset = (Math.floor(random() * 7) - 3); // -3 to +3
+                    if (offset === 0) offset = 1;
+
+                    let wrongAnswer = correctAnswer + offset;
+                    
+                    // Add realistic distractors (neighboring multiplication or simple errors)
+                    if (random() > 0.5) {
+                        const fakeNum1 = Math.min(9, Math.max(1, num1 + (random() > 0.5 ? 1 : -1)));
+                        wrongAnswer = fakeNum1 * num2;
+                    }
+
+                    if (wrongAnswer > 0 && wrongAnswer <= 81 && wrongAnswer !== correctAnswer) {
+                        optionsSet.add(wrongAnswer);
+                    }
+                }
+
+                // Shuffle options deterministically using seeded random
+                const options = Array.from(optionsSet);
+                for (let j = options.length - 1; j > 0; j--) {
+                    const k = Math.floor(random() * (j + 1));
+                    [options[j], options[k]] = [options[k], options[j]];
+                }
+
+                generatedList.push({
+                    num1: num1,
+                    num2: num2,
+                    correctAnswer: correctAnswer,
+                    options: options
+                });
+            }
+
+            return generatedList;
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeRemaining = TOTAL_TIME_SECONDS;
+            updateTimerDisplay();
+
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    finishGame();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const formatted = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            
+            const timerDisplay = document.getElementById('time-display');
+            const timerBox = document.getElementById('timer-box');
+            
+            timerDisplay.textContent = formatted;
+
+            // Warning effect when time is under 1 minute
+            if (timeRemaining <= 60) {
+                timerBox.classList.remove('bg-amber-100', 'text-amber-900', 'border-amber-300');
+                timerBox.classList.add('bg-rose-100', 'text-rose-800', 'border-rose-400', 'animate-pulse');
+            } else {
+                timerBox.classList.remove('bg-rose-100', 'text-rose-800', 'border-rose-400', 'animate-pulse');
+                timerBox.classList.add('bg-amber-100', 'text-amber-900', 'border-amber-300');
+            }
+        }
+
+        function startGame() {
+            // Initialize dataset
+            questions = generateQuestions();
+            currentIndex = 0;
+            score = 0;
+            startTime = Date.now();
+
+            // Toggle screens
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('flex');
+            
+            const quizScreen = document.getElementById('quiz-screen');
+            quizScreen.classList.remove('hidden');
+            quizScreen.classList.add('flex');
+
+            // Render first question & start timer
+            renderCurrentQuestion();
+            startTimer();
+        }
+
+        function renderCurrentQuestion() {
+            if (currentIndex >= TOTAL_QUESTIONS) {
+                finishGame();
+                return;
+            }
+
+            const q = questions[currentIndex];
+            
+            // Update question info & expression
+            document.getElementById('question-number').textContent = currentIndex + 1;
+            document.getElementById('math-expression').textContent = `${q.num1} × ${q.num2} = ?`;
+
+            // Update options
+            for (let i = 0; i < 4; i++) {
+                const btn = document.getElementById(`opt-${i}`);
+                btn.textContent = q.options[i];
+            }
+
+            // Update Progress Bar
+            const progressPercent = ((currentIndex) / TOTAL_QUESTIONS) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+        }
+
+        function selectOption(optionIndex) {
+            const q = questions[currentIndex];
+            const selectedValue = q.options[optionIndex];
+
+            // Score checking (1 point for correct, 0 for wrong)
+            if (selectedValue === q.correctAnswer) {
+                score++;
+            }
+
+            // Instantly advance to next question
+            currentIndex++;
+
+            if (currentIndex < TOTAL_QUESTIONS) {
+                renderCurrentQuestion();
+            } else {
+                finishGame();
+            }
+        }
+
+        function finishGame() {
+            clearInterval(timerInterval);
+            endTime = Date.now();
+
+            // Hide Quiz, Show Results
+            const quizScreen = document.getElementById('quiz-screen');
+            quizScreen.classList.add('hidden');
+            quizScreen.classList.remove('flex');
+
+            const resultScreen = document.getElementById('result-screen');
+            resultScreen.classList.remove('hidden');
+            resultScreen.classList.add('flex');
+
+            // Calculations
+            const elapsedSeconds = Math.min(TOTAL_TIME_SECONDS, Math.round((endTime - startTime) / 1000));
+            const accuracy = currentIndex > 0 ? Math.round((score / currentIndex) * 100) : 0;
+
+            // Render stats
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('completed-count').textContent = `${currentIndex}/${TOTAL_QUESTIONS}`;
+            document.getElementById('accuracy-rate').textContent = `${accuracy}%`;
+            document.getElementById('time-spent').textContent = `${elapsedSeconds}秒`;
+
+            // Performance Feedback
+            const performanceTag = document.getElementById('performance-tag');
+            const badgeIcon = document.getElementById('badge-icon');
+
+            if (score >= 90) {
+                badgeIcon.textContent = '👑';
+                performanceTag.textContent = '神級心算王！';
+            } else if (score >= 75) {
+                badgeIcon.textContent = '🥇';
+                performanceTag.textContent = '心算大師！';
+            } else if (score >= 50) {
+                badgeIcon.textContent = '🥈';
+                performanceTag.textContent = '表現優良！';
+            } else {
+                badgeIcon.textContent = '💪';
+                performanceTag.textContent = '再接再厲！';
+            }
+
+            // Final progress bar full if 100 questions completed
+            document.getElementById('progress-bar').style.width = `100%`;
+        }
+
+        function resetGame() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('flex');
+            
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
