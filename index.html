@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>第二屆4A心算王大賽 乘法篇</title>
-    <!-- Tailwind CSS for modern responsive layout -->
+    <title>乘法心算溫習</title>
+    <!-- Tailwind CSS for modern responsive visual design -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* iPad touch optimization & disallow visual text selection */
         body {
             user-select: none;
             -webkit-user-select: none;
@@ -15,129 +14,164 @@
             font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             touch-action: manipulation;
         }
-        
-        /* Custom button tap effect */
+
         .option-btn {
-            transition: transform 0.08s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+            transition: transform 0.08s ease, background-color 0.15s ease, border-color 0.15s ease;
         }
         .option-btn:active {
-            transform: scale(0.96);
+            transform: scale(0.97);
         }
 
-        /* Smooth progress bar transitions */
         .progress-bar-inner {
             transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        /* Shake animation when an incorrect answer is selected */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .animate-shake {
+            animation: shake 0.35s ease-in-out;
+        }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col justify-between items-center p-4 sm:p-6 text-slate-800">
+<body class="bg-amber-50/50 min-h-screen flex flex-col justify-between items-center p-4 sm:p-6 text-slate-800">
 
     <header class="w-full max-w-3xl text-center my-2">
-        <div class="inline-block bg-amber-400 text-amber-950 font-black px-4 py-1 rounded-full text-sm sm:text-base mb-2 shadow-sm uppercase tracking-wider">
-            四年級班際賽事
+        <div class="inline-block bg-indigo-600 text-white font-black px-4 py-1 rounded-full text-sm sm:text-base mb-2 shadow-sm uppercase tracking-wider">
+            四年級數學科
         </div>
-        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-indigo-900 tracking-tight">
-            第二屆4A心算王大賽
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-indigo-950 tracking-tight">
+            乘法心算溫習
         </h1>
-        <h2 class="text-xl sm:text-2xl font-bold text-indigo-600 mt-1">
-            乘法篇（個位數 × 個位數）
+        <h2 class="text-lg sm:text-xl font-bold text-amber-600 mt-1">
+            （2×2 至 9×9 基礎練習）
         </h2>
     </header>
 
     <main class="w-full max-w-3xl flex-1 flex flex-col justify-center items-center my-2">
 
-        <!-- ==================== 1. START SCREEN ==================== -->
-        <div id="start-screen" class="w-full bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200/80 text-center flex flex-col items-center">
-            <div class="w-24 h-24 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-6 text-5xl shadow-inner">
-                🏆
+        <!-- ==================== 1. START / BANK SELECTION SCREEN ==================== -->
+        <div id="start-screen" class="w-full bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-amber-100 text-center flex flex-col items-center">
+            <div class="w-20 h-20 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4 text-4xl shadow-inner">
+                ✏️
             </div>
-            <h3 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-4">比賽準備說明</h3>
+            <h3 class="text-2xl sm:text-3xl font-bold text-slate-800 mb-2">請選擇練習題庫</h3>
+            <p class="text-slate-500 font-medium mb-6">共有 10 個題庫，每個題庫含 100 題（固定題目順序）</p>
             
-            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-8 text-left w-full max-w-lg space-y-3 text-slate-700 text-lg">
-                <div class="flex items-start">
-                    <span class="bg-indigo-500 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-sm mr-3 shrink-0 mt-0.5">1</span>
-                    <span>總共有 <strong class="text-indigo-600">100 題</strong> 個位數乘法選擇題。</span>
-                </div>
-                <div class="flex items-start">
-                    <span class="bg-indigo-500 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-sm mr-3 shrink-0 mt-0.5">2</span>
-                    <span>比賽限時 <strong class="text-rose-600">5 分鐘 (300 秒)</strong>。</span>
-                </div>
-                <div class="flex items-start">
-                    <span class="bg-indigo-500 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-sm mr-3 shrink-0 mt-0.5">3</span>
-                    <span>每題答對得 1 分，答錯不扣分。</span>
-                </div>
-                <div class="flex items-start">
-                    <span class="bg-indigo-500 text-white rounded-full w-7 h-7 flex items-center justify-center font-bold text-sm mr-3 shrink-0 mt-0.5">4</span>
-                    <span>全體同學題目順序相同，請盡力加快速度！</span>
+            <!-- Bank Selection Buttons (1 to 10) -->
+            <div class="w-full max-w-xl mb-6">
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 text-left">選擇題庫 (1 - 10)</label>
+                <div id="bank-grid" class="grid grid-cols-5 gap-2 sm:gap-3">
+                    <!-- Generated dynamically via JS -->
                 </div>
             </div>
 
-            <button id="start-btn" onclick="startGame()" class="w-full max-w-md bg-indigo-600 hover:bg-indigo-700 text-white text-2xl font-bold py-5 px-8 rounded-2xl shadow-lg hover:shadow-indigo-200 active:scale-95 transition-all cursor-pointer">
-                🚀 開始比賽
+            <!-- Rules Box -->
+            <div class="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-4 mb-6 text-left w-full max-w-xl space-y-2 text-slate-700 text-base">
+                <div class="flex items-center">
+                    <span class="bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs mr-3 shrink-0">1</span>
+                    <span>範圍：<strong class="text-indigo-700">2×2 至 9×9</strong>（已自動排除數字 1）。</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs mr-3 shrink-0">2</span>
+                    <span>限時：<strong class="text-rose-600">5 分鐘 (300 秒)</strong>，總分 100 分。</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs mr-3 shrink-0">3</span>
+                    <span><strong class="text-rose-600">答錯時：</strong>會即時顯示正確答案，確認後按「下一題」繼續。</span>
+                </div>
+            </div>
+
+            <button id="start-btn" onclick="startGame()" class="w-full max-w-md bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-2xl font-bold py-4 px-8 rounded-2xl shadow-lg hover:shadow-indigo-200 active:scale-95 transition-all cursor-pointer flex items-center justify-center space-x-2">
+                <span>🚀 開始溫習</span>
+                <span id="selected-bank-tag" class="text-sm bg-indigo-500 px-3 py-1 rounded-full font-normal">(題庫 1)</span>
             </button>
         </div>
 
 
-        <!-- ==================== 2. QUIZ SCREEN ==================== -->
+        <!-- ==================== 2. QUIZ / PRACTICE SCREEN ==================== -->
         <div id="quiz-screen" class="w-full bg-white rounded-3xl p-5 sm:p-8 shadow-xl border border-slate-200/80 hidden flex-col">
             
-            <!-- Top Dashboard: Timer & Progress -->
-            <div class="mb-6">
-                <div class="flex justify-between items-center mb-3">
+            <!-- Top Bar: Progress & Timer -->
+            <div class="mb-4">
+                <div class="flex justify-between items-center mb-2">
                     <div class="flex items-center space-x-2">
-                        <span class="text-slate-500 font-semibold text-lg">進度：</span>
+                        <span id="quiz-bank-label" class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-xl text-xs sm:text-sm">題庫 1</span>
+                        <span class="text-slate-500 font-semibold text-base sm:text-lg">題號：</span>
                         <span id="question-number" class="text-2xl font-black text-indigo-600">1</span>
-                        <span class="text-slate-400 font-bold text-xl">/ 100</span>
+                        <span class="text-slate-400 font-bold text-lg">/ 100</span>
                     </div>
 
-                    <!-- Timer Pill -->
-                    <div id="timer-box" class="flex items-center bg-amber-100 text-amber-900 border-2 border-amber-300 font-mono font-black text-2xl sm:text-3xl px-5 py-2 rounded-2xl shadow-sm">
+                    <!-- Timer Box -->
+                    <div id="timer-box" class="flex items-center bg-amber-100 text-amber-900 border-2 border-amber-300 font-mono font-black text-2xl sm:text-3xl px-4 py-1.5 rounded-2xl shadow-sm">
                         ⏱️ <span id="time-display" class="ml-2">05:00</span>
                     </div>
                 </div>
 
                 <!-- Progress Bar -->
-                <div class="w-full bg-slate-200 h-4 rounded-full overflow-hidden p-0.5">
+                <div class="w-full bg-slate-100 h-3.5 rounded-full overflow-hidden p-0.5 border border-slate-200">
                     <div id="progress-bar" class="progress-bar-inner bg-indigo-600 h-full rounded-full w-0"></div>
                 </div>
             </div>
 
             <!-- Question Card -->
-            <div class="bg-indigo-50/70 border-2 border-indigo-100 rounded-3xl p-8 sm:p-12 mb-6 text-center shadow-inner flex flex-col justify-center items-center min-h-[180px]">
-                <div class="text-slate-500 text-sm sm:text-base font-bold uppercase tracking-wider mb-2">請計算出正確答案</div>
-                <div id="math-expression" class="text-6xl sm:text-7xl md:text-8xl font-black text-indigo-950 tracking-wide font-mono">
-                    7 × 8 = ?
+            <div class="bg-gradient-to-b from-indigo-50/80 to-slate-50 border-2 border-indigo-100 rounded-3xl p-6 sm:p-10 mb-4 text-center shadow-inner flex flex-col justify-center items-center min-h-[160px]">
+                <div class="text-indigo-400 text-xs sm:text-sm font-bold uppercase tracking-wider mb-1">請計算正確答案</div>
+                <div id="math-expression" class="text-6xl sm:text-7xl font-black text-indigo-950 tracking-wide font-mono">
+                    -- × -- = ?
                 </div>
             </div>
 
-            <!-- Answer Options (2x2 Grid optimized for iPad touch) -->
-            <div class="grid grid-cols-2 gap-4 sm:gap-6">
-                <button onclick="selectOption(0)" id="opt-0" class="option-btn bg-slate-50 hover:bg-indigo-50 border-3 border-slate-300 hover:border-indigo-400 text-slate-800 text-3xl sm:text-5xl font-black py-6 sm:py-8 rounded-2xl shadow-md flex items-center justify-center">
+            <!-- Answer Options (2x2 Grid) -->
+            <div class="grid grid-cols-2 gap-3 sm:gap-5 mb-4">
+                <button onclick="handleOptionClick(0)" id="opt-0" class="option-btn bg-slate-50 hover:bg-indigo-50 border-3 border-slate-300 text-slate-800 text-3xl sm:text-5xl font-black py-5 sm:py-7 rounded-2xl shadow-md flex items-center justify-center">
                     --
                 </button>
-                <button onclick="selectOption(1)" id="opt-1" class="option-btn bg-slate-50 hover:bg-indigo-50 border-3 border-slate-300 hover:border-indigo-400 text-slate-800 text-3xl sm:text-5xl font-black py-6 sm:py-8 rounded-2xl shadow-md flex items-center justify-center">
+                <button onclick="handleOptionClick(1)" id="opt-1" class="option-btn bg-slate-50 hover:bg-indigo-50 border-3 border-slate-300 text-slate-800 text-3xl sm:text-5xl font-black py-5 sm:py-7 rounded-2xl shadow-md flex items-center justify-center">
                     --
                 </button>
-                <button onclick="selectOption(2)" id="opt-2" class="option-btn bg-slate-50 hover:bg-indigo-50 border-3 border-slate-300 hover:border-indigo-400 text-slate-800 text-3xl sm:text-5xl font-black py-6 sm:py-8 rounded-2xl shadow-md flex items-center justify-center">
+                <button onclick="handleOptionClick(2)" id="opt-2" class="option-btn bg-slate-50 hover:bg-indigo-50 border-3 border-slate-300 text-slate-800 text-3xl sm:text-5xl font-black py-5 sm:py-7 rounded-2xl shadow-md flex items-center justify-center">
                     --
                 </button>
-                <button onclick="selectOption(3)" id="opt-3" class="option-btn bg-slate-50 hover:bg-indigo-50 border-3 border-slate-300 hover:border-indigo-400 text-slate-800 text-3xl sm:text-5xl font-black py-6 sm:py-8 rounded-2xl shadow-md flex items-center justify-center">
+                <button onclick="handleOptionClick(3)" id="opt-3" class="option-btn bg-slate-50 hover:bg-indigo-50 border-3 border-slate-300 text-slate-800 text-3xl sm:text-5xl font-black py-5 sm:py-7 rounded-2xl shadow-md flex items-center justify-center">
                     --
+                </button>
+            </div>
+
+            <!-- Feedback Area (Triggered when answer is wrong) -->
+            <div id="feedback-area" class="hidden flex-col sm:flex-row items-center justify-between bg-rose-50 border-2 border-rose-300 rounded-2xl p-3 sm:p-4 animate-shake">
+                <div class="flex items-center space-x-3 mb-2 sm:mb-0">
+                    <span class="text-3xl">❌</span>
+                    <div>
+                        <div class="text-rose-800 font-extrabold text-lg sm:text-xl">答錯了！</div>
+                        <div class="text-rose-700 font-semibold text-sm sm:text-base">
+                            正確答案是：<span id="correct-answer-text" class="text-2xl font-black underline decoration-2">0</span>
+                        </div>
+                    </div>
+                </div>
+                <button id="next-btn" onclick="nextQuestion()" class="w-full sm:w-auto bg-rose-600 hover:bg-rose-700 text-white font-bold text-xl px-8 py-3 rounded-xl shadow-md active:scale-95 transition-all cursor-pointer">
+                    下一題 ➔
                 </button>
             </div>
         </div>
 
 
-        <!-- ==================== 3. RESULT SCREEN ==================== -->
+        <!-- ==================== 3. RESULT REPORT SCREEN ==================== -->
         <div id="result-screen" class="w-full bg-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200/80 hidden flex-col items-center text-center">
             
             <div id="badge-icon" class="text-6xl mb-2">🎉</div>
-            <h3 class="text-3xl font-extrabold text-slate-800 mb-1">比賽結束！</h3>
-            <p id="result-subtitle" class="text-slate-500 font-medium mb-6">太棒了！這是你的心算成績單</p>
+            <h3 class="text-3xl font-extrabold text-slate-800 mb-1">溫習完成！</h3>
+            <p id="result-subtitle" class="text-slate-500 font-medium mb-6">這是你的表現成績單</p>
 
-            <!-- Score Banner -->
-            <div class="bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-3xl p-6 mb-8 w-full max-w-md shadow-lg">
-                <div class="text-indigo-100 font-bold uppercase tracking-wider text-sm mb-1">最終總得分</div>
+            <!-- Final Score Banner -->
+            <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 text-white rounded-3xl p-6 mb-6 w-full max-w-md shadow-lg">
+                <div class="flex justify-between items-center text-indigo-100 font-bold uppercase tracking-wider text-xs mb-1 px-2">
+                    <span>最終得分</span>
+                    <span id="result-bank-label" class="bg-white/20 px-2.5 py-0.5 rounded-full">題庫 1</span>
+                </div>
                 <div class="text-6xl sm:text-7xl font-black tracking-tight mb-1">
                     <span id="final-score">0</span> <span class="text-2xl font-normal text-indigo-200">/ 100 分</span>
                 </div>
@@ -147,39 +181,44 @@
             </div>
 
             <!-- Stats Grid -->
-            <div class="grid grid-cols-3 gap-3 sm:gap-4 w-full max-w-md mb-8">
+            <div class="grid grid-cols-3 gap-3 w-full max-w-md mb-8">
                 <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center">
-                    <div class="text-slate-400 text-xs sm:text-sm font-bold mb-1">完成題數</div>
+                    <div class="text-slate-400 text-xs font-bold mb-1">完成題數</div>
                     <div id="completed-count" class="text-xl sm:text-2xl font-black text-slate-800">0/100</div>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center">
-                    <div class="text-slate-400 text-xs sm:text-sm font-bold mb-1">正確率</div>
+                    <div class="text-slate-400 text-xs font-bold mb-1">正確率</div>
                     <div id="accuracy-rate" class="text-xl sm:text-2xl font-black text-emerald-600">0%</div>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-center">
-                    <div class="text-slate-400 text-xs sm:text-sm font-bold mb-1">總耗時</div>
+                    <div class="text-slate-400 text-xs font-bold mb-1">總耗時</div>
                     <div id="time-spent" class="text-xl sm:text-2xl font-black text-amber-600">0秒</div>
                 </div>
             </div>
 
-            <!-- Retry Button -->
+            <!-- Return Button -->
             <button onclick="resetGame()" class="w-full max-w-md bg-slate-800 hover:bg-slate-900 text-white text-xl font-bold py-4 px-8 rounded-2xl shadow-md active:scale-95 transition-all cursor-pointer">
-                🔄 重新挑戰
+                🔄 返回選單 (換題庫或再練一次)
             </button>
         </div>
 
     </main>
 
     <footer class="text-slate-400 text-xs sm:text-sm text-center py-2">
-        第二屆4A心算王大賽 · iPad 專用競賽系統
+        乘法心算溫習 · iPad 互動學習系統
     </footer>
 
-    <!-- ==================== JAVASCRIPT LOGIC ==================== -->
     <script>
         const TOTAL_QUESTIONS = 100;
-        const TOTAL_TIME_SECONDS = 300; // 5 minutes = 300 seconds
-        const SEED = 20260401; // Fixed seed ensuring exact same order across all devices
+        const TOTAL_TIME_SECONDS = 300; // 5 minutes
 
+        // Fixed Seed PRNG seeds for Question Banks 1 to 10
+        const BANK_SEEDS = [
+            20260401, 88310245, 19482039, 77401928, 55201948,
+            33910284, 99401827, 44810293, 66102938, 12345678
+        ];
+
+        let selectedBankIndex = 0;
         let questions = [];
         let currentIndex = 0;
         let score = 0;
@@ -187,49 +226,54 @@
         let timerInterval = null;
         let startTime = 0;
         let endTime = 0;
+        let isWaitingForNext = false;
 
-        // Mulberry32 seeded random number generator
-        function mulberry32(a) {
+        // Mulberry32 Seeded PRNG for consistent question sequences
+        function mulberry32(seed) {
             return function() {
-                let t = a += 0x6D2B79F5;
+                let t = seed += 0x6D2B79F5;
                 t = Math.imul(t ^ (t >>> 15), t | 1);
                 t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
                 return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
             }
         }
 
-        function generateQuestions() {
-            const random = mulberry32(SEED);
+        function generateQuestions(bankIndex) {
+            const seed = BANK_SEEDS[bankIndex];
+            const random = mulberry32(seed);
             const generatedList = [];
 
             for (let i = 0; i < TOTAL_QUESTIONS; i++) {
-                // Generate two single-digit factors (1 to 9)
-                const num1 = Math.floor(random() * 9) + 1;
-                const num2 = Math.floor(random() * 9) + 1;
+                // Factors from 2 to 9 (Strictly no 1)
+                const num1 = Math.floor(random() * 8) + 2; 
+                const num2 = Math.floor(random() * 8) + 2;
                 const correctAnswer = num1 * num2;
 
-                // Generate 3 plausible distractors
                 const optionsSet = new Set();
                 optionsSet.add(correctAnswer);
 
+                // Generate 3 plausible distractors
                 while (optionsSet.size < 4) {
-                    let offset = (Math.floor(random() * 7) - 3); // -3 to +3
-                    if (offset === 0) offset = 1;
+                    let wrongAnswer;
+                    const strategy = random();
 
-                    let wrongAnswer = correctAnswer + offset;
-                    
-                    // Add realistic distractors (neighboring multiplication or simple errors)
-                    if (random() > 0.5) {
-                        const fakeNum1 = Math.min(9, Math.max(1, num1 + (random() > 0.5 ? 1 : -1)));
+                    if (strategy < 0.4) {
+                        const fakeNum1 = Math.min(9, Math.max(2, num1 + (random() > 0.5 ? 1 : -1)));
                         wrongAnswer = fakeNum1 * num2;
+                    } else if (strategy < 0.7) {
+                        let offset = Math.floor(random() * 7) - 3;
+                        if (offset === 0) offset = 2;
+                        wrongAnswer = correctAnswer + offset;
+                    } else {
+                        wrongAnswer = (num1 + 1) * (num2 + 1);
                     }
 
-                    if (wrongAnswer > 0 && wrongAnswer <= 81 && wrongAnswer !== correctAnswer) {
+                    if (wrongAnswer >= 4 && wrongAnswer <= 81 && wrongAnswer !== correctAnswer) {
                         optionsSet.add(wrongAnswer);
                     }
                 }
 
-                // Shuffle options deterministically using seeded random
+                // Deterministically shuffle options
                 const options = Array.from(optionsSet);
                 for (let j = options.length - 1; j > 0; j--) {
                     const k = Math.floor(random() * (j + 1));
@@ -245,6 +289,35 @@
             }
 
             return generatedList;
+        }
+
+        function initBankGrid() {
+            const container = document.getElementById('bank-grid');
+            container.innerHTML = '';
+
+            for (let i = 0; i < 10; i++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.onclick = () => selectBank(i);
+                btn.id = `bank-btn-${i}`;
+                btn.className = `py-3 font-extrabold rounded-xl text-lg border-2 transition-all cursor-pointer ${
+                    i === selectedBankIndex 
+                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-md scale-105' 
+                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-indigo-300'
+                }`;
+                btn.textContent = `題庫 ${i + 1}`;
+                container.appendChild(btn);
+            }
+            updateBankTag();
+        }
+
+        function selectBank(index) {
+            selectedBankIndex = index;
+            initBankGrid();
+        }
+
+        function updateBankTag() {
+            document.getElementById('selected-bank-tag').textContent = `(題庫 ${selectedBankIndex + 1})`;
         }
 
         function startTimer() {
@@ -273,7 +346,6 @@
             
             timerDisplay.textContent = formatted;
 
-            // Warning effect when time is under 1 minute
             if (timeRemaining <= 60) {
                 timerBox.classList.remove('bg-amber-100', 'text-amber-900', 'border-amber-300');
                 timerBox.classList.add('bg-rose-100', 'text-rose-800', 'border-rose-400', 'animate-pulse');
@@ -284,13 +356,14 @@
         }
 
         function startGame() {
-            // Initialize dataset
-            questions = generateQuestions();
+            questions = generateQuestions(selectedBankIndex);
             currentIndex = 0;
             score = 0;
+            isWaitingForNext = false;
             startTime = Date.now();
 
-            // Toggle screens
+            document.getElementById('quiz-bank-label').textContent = `題庫 ${selectedBankIndex + 1}`;
+
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('flex');
@@ -299,7 +372,6 @@
             quizScreen.classList.remove('hidden');
             quizScreen.classList.add('flex');
 
-            // Render first question & start timer
             renderCurrentQuestion();
             startTimer();
         }
@@ -310,47 +382,73 @@
                 return;
             }
 
+            isWaitingForNext = false;
+            document.getElementById('feedback-area').classList.add('hidden');
+            document.getElementById('feedback-area').classList.remove('flex');
+
             const q = questions[currentIndex];
             
-            // Update question info & expression
             document.getElementById('question-number').textContent = currentIndex + 1;
             document.getElementById('math-expression').textContent = `${q.num1} × ${q.num2} = ?`;
 
-            // Update options
             for (let i = 0; i < 4; i++) {
                 const btn = document.getElementById(`opt-${i}`);
                 btn.textContent = q.options[i];
+                btn.disabled = false;
+                btn.className = "option-btn bg-slate-50 hover:bg-indigo-50 border-3 border-slate-300 text-slate-800 text-3xl sm:text-5xl font-black py-5 sm:py-7 rounded-2xl shadow-md flex items-center justify-center cursor-pointer";
             }
 
-            // Update Progress Bar
-            const progressPercent = ((currentIndex) / TOTAL_QUESTIONS) * 100;
+            const progressPercent = (currentIndex / TOTAL_QUESTIONS) * 100;
             document.getElementById('progress-bar').style.width = `${progressPercent}%`;
         }
 
-        function selectOption(optionIndex) {
+        function handleOptionClick(optionIndex) {
+            if (isWaitingForNext) return;
+
             const q = questions[currentIndex];
             const selectedValue = q.options[optionIndex];
+            const selectedBtn = document.getElementById(`opt-${optionIndex}`);
 
-            // Score checking (1 point for correct, 0 for wrong)
             if (selectedValue === q.correctAnswer) {
+                // Correct answer handling
                 score++;
-            }
+                selectedBtn.className = "option-btn bg-emerald-500 text-white border-3 border-emerald-600 text-3xl sm:text-5xl font-black py-5 sm:py-7 rounded-2xl shadow-lg flex items-center justify-center";
+                
+                isWaitingForNext = true;
 
-            // Instantly advance to next question
-            currentIndex++;
+                setTimeout(() => {
+                    currentIndex++;
+                    renderCurrentQuestion();
+                }, 400);
 
-            if (currentIndex < TOTAL_QUESTIONS) {
-                renderCurrentQuestion();
             } else {
-                finishGame();
+                // Incorrect answer handling
+                isWaitingForNext = true;
+                selectedBtn.className = "option-btn bg-rose-500 text-white border-3 border-rose-600 text-3xl sm:text-5xl font-black py-5 sm:py-7 rounded-2xl shadow-lg flex items-center justify-center";
+
+                for (let i = 0; i < 4; i++) {
+                    if (q.options[i] === q.correctAnswer) {
+                        document.getElementById(`opt-${i}`).className = "option-btn bg-emerald-100 text-emerald-800 border-3 border-emerald-400 text-3xl sm:text-5xl font-black py-5 sm:py-7 rounded-2xl flex items-center justify-center";
+                    }
+                    document.getElementById(`opt-${i}`).disabled = true;
+                }
+
+                document.getElementById('correct-answer-text').textContent = q.correctAnswer;
+                const feedbackArea = document.getElementById('feedback-area');
+                feedbackArea.classList.remove('hidden');
+                feedbackArea.classList.add('flex');
             }
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            renderCurrentQuestion();
         }
 
         function finishGame() {
             clearInterval(timerInterval);
             endTime = Date.now();
 
-            // Hide Quiz, Show Results
             const quizScreen = document.getElementById('quiz-screen');
             quizScreen.classList.add('hidden');
             quizScreen.classList.remove('flex');
@@ -359,17 +457,15 @@
             resultScreen.classList.remove('hidden');
             resultScreen.classList.add('flex');
 
-            // Calculations
             const elapsedSeconds = Math.min(TOTAL_TIME_SECONDS, Math.round((endTime - startTime) / 1000));
             const accuracy = currentIndex > 0 ? Math.round((score / currentIndex) * 100) : 0;
 
-            // Render stats
             document.getElementById('final-score').textContent = score;
+            document.getElementById('result-bank-label').textContent = `題庫 ${selectedBankIndex + 1}`;
             document.getElementById('completed-count').textContent = `${currentIndex}/${TOTAL_QUESTIONS}`;
             document.getElementById('accuracy-rate').textContent = `${accuracy}%`;
             document.getElementById('time-spent').textContent = `${elapsedSeconds}秒`;
 
-            // Performance Feedback
             const performanceTag = document.getElementById('performance-tag');
             const badgeIcon = document.getElementById('badge-icon');
 
@@ -384,19 +480,22 @@
                 performanceTag.textContent = '表現優良！';
             } else {
                 badgeIcon.textContent = '💪';
-                performanceTag.textContent = '再接再厲！';
+                performanceTag.textContent = '再接再勵！';
             }
 
-            // Final progress bar full if 100 questions completed
             document.getElementById('progress-bar').style.width = `100%`;
         }
 
         function resetGame() {
             document.getElementById('result-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('flex');
-            
             document.getElementById('start-screen').classList.remove('hidden');
+            initBankGrid();
         }
+
+        window.onload = function() {
+            initBankGrid();
+        };
     </script>
 </body>
 </html>
